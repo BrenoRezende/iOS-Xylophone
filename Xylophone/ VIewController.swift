@@ -11,7 +11,7 @@ import AVFoundation
 
 class ViewController: UIViewController{
 
-    var audioPlayer: AVAudioPlayer?
+    var audioPlayer: AVPlayer?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -19,23 +19,18 @@ class ViewController: UIViewController{
 
     @IBAction func notePressed(_ sender: UIButton) {
         
-        if let audioPlayer = audioPlayer, audioPlayer.isPlaying { audioPlayer.stop() }
-        print(sender.tag)
-        guard let audioUrl = Bundle.main.path(forResource: "note\(sender.tag)", ofType: "wav") else {
-            print("Error: No file with specified name exists")
+        playNote(sender.tag)
+    }
+    
+    fileprivate func playNote(_ tag: Int) {
+        
+        guard let url = Bundle.main.url(forResource: "note\(tag)", withExtension: "wav") else {
+            print("Error: Could not find audio file")
             return
         }
         
-        let xylophoneAudio = URL(fileURLWithPath: audioUrl)
-        
-        do {
-//            try AVAudioSession.sharedInstance().setCategory(AVAudioSession.Category.playback, mode: AVAudioSession.Mode.default)
-//            try AVAudioSession.sharedInstance().setActive(true)
-            let audioPlayer = try AVAudioPlayer(contentsOf: xylophoneAudio)
-            audioPlayer.play()
-        } catch let error {
-            print(error.localizedDescription)
-        }
+        audioPlayer = AVPlayer(url: url)
+        audioPlayer?.play() ?? print("Error: Could not play")
     }
 
 }
